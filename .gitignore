@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+
+# OAuth credentials (never commit)
+credentials.json
+token.json
+
+# Runtime data
+data/raw/
+data/scored/
+data/briefings/
+data/briefing.log
+
+# macOS
+.DS_Store
