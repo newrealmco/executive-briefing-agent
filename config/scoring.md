@@ -43,8 +43,9 @@ weekly_briefing: 0.45
 
 ## Special boost rules
 
-jdd_direct_connection: +0.20
+jdd_direct_connection: +0.10
 agent_governance_intersection: +0.15
 consulting_lead_signal: +0.25
 mcp_new_development: +0.15
 israel_tech_local_relevance: +0.10
+genuinely_novel_capability: +0.15

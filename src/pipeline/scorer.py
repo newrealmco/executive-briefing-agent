@@ -22,7 +22,7 @@ def _apply_boosts(item: dict) -> tuple[float, list[str]]:
     total = 0.0
 
     if "Judgment Driven Development" in topic_matches:
-        total += 0.20
+        total += 0.10
         boosts.append("jdd_direct_connection")
 
     has_agent = "Agents — coding and deployed" in topic_matches
@@ -42,6 +42,18 @@ def _apply_boosts(item: dict) -> tuple[float, list[str]]:
     if ("zoho" in source or "gmail" in source) and "Judgment Driven Development" in topic_matches:
         total += 0.10
         boosts.append("zoho_gmail_jdd_signal")
+
+    # genuinely_novel_capability — breaking signal on a new model/tool/capability
+    novelty = item.get("metadata", {}).get("novelty_signal", "")
+    if novelty == "breaking" and any(
+        t in topic_matches for t in [
+            "AI and ML frontier",
+            "Agents — coding and deployed",
+            "AI governance and supply chain security",
+        ]
+    ):
+        total += 0.15
+        boosts.append("genuinely_novel_capability")
 
     return total, boosts
 

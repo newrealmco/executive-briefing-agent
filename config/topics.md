@@ -10,7 +10,7 @@ keywords: ai governance, model lifecycle, runtime governance, ai gateway, policy
 exclude: generic ai ethics debates without technical substance, shallow compliance news
 
 ## Judgment Driven Development
-weight: 5
+weight: 3
 keywords: decision frameworks, engineering judgment, product judgment, ai-assisted development,
   natural language abstraction, human-ai collaboration, pm decision making, software process,
   vibe coding, ai pair programming, developer judgment, autonomy in software
