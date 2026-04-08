@@ -124,7 +124,7 @@ def collect(lookback_hours: int = 24, max_results: int = 50) -> list[dict[str, A
 
     cutoff = datetime.now(timezone.utc) - timedelta(hours=lookback_hours)
     after_ts = int(cutoff.timestamp())
-    query = f"after:{after_ts} -in:spam -in:trash"
+    query = f"after:{after_ts} -in:spam -in:trash -from:updates.newrealm.co"
 
     log.info("Gmail fetch: query=%s", query)
 

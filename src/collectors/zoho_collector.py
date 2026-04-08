@@ -121,6 +121,10 @@ def collect(lookback_hours: int = 24, max_results: int = 50) -> list[dict[str, A
             sender = msg.get("From", "")
             date_str = msg.get("Date", "")
 
+            # Skip briefing emails sent by this system
+            if "updates.newrealm.co" in sender:
+                continue
+
             try:
                 published_at = parsedate_to_datetime(date_str).isoformat() if date_str else now_iso()
             except Exception:
