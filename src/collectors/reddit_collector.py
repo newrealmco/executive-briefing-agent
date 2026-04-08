@@ -12,6 +12,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import feedparser
+import requests
 from bs4 import BeautifulSoup
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -21,7 +22,9 @@ from src.logger import get_logger
 log = get_logger(__name__)
 
 LOOKBACK_HOURS = 24
-USER_AGENT = "personal-briefing-agent/1.0 (RSS reader)"
+# Reddit blocks feedparser's built-in HTTP client regardless of agent string.
+# Fetch via requests (which correctly sends the header), then parse the content.
+USER_AGENT = "Mozilla/5.0 (compatible; personal-briefing-agent/1.0)"
 
 
 def _strip_html(html: str) -> str:
@@ -46,8 +49,9 @@ def _is_recent(entry: Any, lookback_hours: int) -> bool:
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
 def _fetch_feed(url: str) -> Any:
-    # Reddit requires a descriptive User-Agent or it returns 429/403
-    return feedparser.parse(url, agent=USER_AGENT)
+    resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=15)
+    resp.raise_for_status()
+    return feedparser.parse(resp.content)
 
 
 def collect(reddit_cfg: dict[str, Any]) -> list[dict[str, Any]]:

@@ -18,7 +18,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Load .env if present (local dev only — GitHub Actions uses secrets)
-load_dotenv()
+_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=_ROOT / ".env", override=True)
 
 from src.config_loader import load_all
 from src.logger import get_logger
@@ -29,6 +30,13 @@ from src.collectors import (
     gmail_collector,
     zoho_collector,
 )
+from src.storage.store import is_duplicate, mark_seen, prune
+from src.pipeline.normalizer import normalize
+from src.pipeline.enricher import enrich
+from src.pipeline.scorer import score
+from src.pipeline.clusterer import cluster
+from src.pipeline.renderer import render
+from src.delivery.email_sender import send
 
 log = get_logger("main")
 
@@ -60,6 +68,33 @@ def save_raw(items: list[dict], mode: str) -> Path:
     return out
 
 
+def run_pipeline(items: list[dict], cfg: dict, mode: str) -> list[dict]:
+    # 1. Normalize
+    items = normalize(items)
+
+    # 2. Deduplicate
+    prune()
+    fresh = [i for i in items if not is_duplicate(i["id"])]
+    log.info("After dedup: %d/%d items fresh", len(fresh), len(items))
+
+    # 3. Enrich (LLM Call 1)
+    enriched = enrich(fresh, cfg)
+
+    # 4. Score (LLM Call 2)
+    scored = score(enriched, cfg)
+
+    # 5. Filter by threshold
+    threshold = cfg["scoring"]["thresholds"].get(f"{mode}_briefing", 0.55)
+    above = [i for i in scored if i["final_score"] >= threshold]
+    log.info("Above threshold (%.2f): %d items", threshold, len(above))
+
+    # 6. Mark all scored items as seen
+    for item in scored:
+        mark_seen(item)
+
+    return above
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Personal Briefing Agent")
     parser.add_argument(
@@ -82,9 +117,28 @@ def main() -> None:
         log.info("Collect-only mode — done.")
         return
 
-    # Phase 3+ (pipeline, scoring, rendering) — stubs for now
-    log.info("Pipeline and rendering not yet implemented (Phase 3+)")
-    log.info("Run with --mode collect to test collectors end-to-end")
+    above_threshold = run_pipeline(items, cfg, args.mode)
+    log.info("Pipeline complete — %d items ready for rendering", len(above_threshold))
+
+    scored_path = DATA_DIR / "scored" / f"{date.today().isoformat()}-{args.mode}-scored.json"
+    scored_path.parent.mkdir(exist_ok=True)
+    with open(scored_path, "w") as f:
+        json.dump(above_threshold, f, indent=2, default=str)
+    log.info("Scored items saved to %s", scored_path)
+
+    # Phase 4: Render and deliver
+    if not above_threshold:
+        log.info("No items above threshold — skipping render and delivery")
+        return
+
+    subject, briefing_md, briefing_html = render(above_threshold, cfg, args.mode)
+    log.info("Briefing rendered: %d chars", len(briefing_md))
+
+    delivered = send(subject=subject, html_body=briefing_html, text_body=briefing_md)
+    if delivered:
+        log.info("=== Briefing delivered successfully ===")
+    else:
+        log.warning("=== Email delivery failed — briefing saved to disk only ===")
 
 
 if __name__ == "__main__":
