@@ -1,5 +1,9 @@
 """
-Prompt templates for the three LLM calls in the pipeline.
+Prompt templates for the pipeline LLM calls.
+
+Calls 1+2 are merged into a single combined call per item (enrich_and_score).
+This halves API calls and avoids repeating the system prompt twice per item.
+The static system prompt (profile + assumptions) is eligible for prompt caching.
 """
 from __future__ import annotations
 
@@ -7,99 +11,65 @@ import json
 
 
 # ---------------------------------------------------------------------------
-# Call 1: Summarize and classify
+# Combined Call 1+2: Summarize, classify, and score in one shot
 # ---------------------------------------------------------------------------
 
-def summarize_and_classify(
-    content_raw: str,
-    topic_list: list[str],
-) -> tuple[str, str]:
-    system = (
-        "You are a precise research assistant. "
-        "Your job is to extract the essential content from a piece of text "
-        "and classify it against a set of topics."
-    )
-
-    topics_formatted = json.dumps(topic_list, ensure_ascii=False)
-
-    user = f"""Analyze the following content and return a JSON object with these exact fields:
-
-{{
-  "summary": "<2-4 sentence summary of the core content>",
-  "topic_matches": ["<topic name from the list that clearly matches>", ...],
-  "language": "<ISO 639-1 language code, e.g. 'en' or 'he'>",
-  "novelty_signal": "<one of: 'breaking', 'incremental', 'repeat', 'background'>"
-}}
-
-Rules:
-- Only include topic_matches that genuinely apply — no guessing.
-- topic_matches must be exact names from the provided topic list.
-- If no topics match, return an empty list.
-- novelty_signal: 'breaking' = new announcement or release; 'incremental' = follow-up or update; 'repeat' = seen before; 'background' = evergreen/reference.
-- Return ONLY the JSON object, no markdown fences, no extra text.
-
-Topic list:
-{topics_formatted}
-
-Content:
-{content_raw}"""
-
-    return system, user
-
-
-# ---------------------------------------------------------------------------
-# Call 2: Score and explain
-# ---------------------------------------------------------------------------
-
-def score_and_explain(
+def enrich_and_score(
     title: str,
-    summary: str,
-    topic_matches: list[str],
+    content_raw: str,
     source_name: str,
     trust_tier: int,
+    topic_list: list[str],
     profile_md: str,
-    priorities: str,
     assumptions_md: str,
 ) -> tuple[str, str]:
-    system = f"""You are a personal intelligence analyst for a senior product manager named Rami.
+    """
+    Single LLM call replacing the former separate summarize + score calls.
+    Returns (system, user) tuple.
+    The system prompt is static per run — use prompt caching on it.
+    """
+    topics_formatted = json.dumps(topic_list, ensure_ascii=False)
 
-Your job is to evaluate each piece of content against Rami's priorities, profile, and operating assumptions, and produce structured scores with clear reasoning.
+    # Truncate content — signal is almost always in the first 1500 chars
+    content_truncated = content_raw[:1500].strip()
 
-## Rami's profile
+    system = f"""You are a personal intelligence analyst for Rami, a senior PM in AI/ML.
+
+## Profile
 {profile_md}
-
-## Current priorities
-{priorities}
 
 ## Operating assumptions
 {assumptions_md}
 
-Scoring dimensions (all 0.0–1.0):
-- relevance_score: How directly does this align with declared topics and current priorities?
-- leverage_score: Potential impact on JDD book, consulting pipeline, career positioning, or current decisions.
-- personal_fit_score: Direct connection to active projects — JDD book, newrealm.co, Meta process, consulting.
-- confidence: How confident are you in these scores given the available content? (0.0–1.0)
+## Topics to classify against
+{topics_formatted}
 
-Return ONLY a JSON object, no markdown, no extra commentary."""
+Your job: given a content item, return a single JSON object with all fields below.
+Return ONLY valid JSON. No markdown fences. No commentary."""
 
-    topics_formatted = json.dumps(topic_matches, ensure_ascii=False)
+    user = f"""Item:
+Title: {title}
+Source: {source_name} (trust tier {trust_tier})
+Content: {content_truncated}
 
-    user = f"""Evaluate this item and return a JSON object with these exact fields:
-
+Return this JSON exactly:
 {{
-  "relevance_score": <0.0–1.0>,
-  "leverage_score": <0.0–1.0>,
-  "personal_fit_score": <0.0–1.0>,
-  "why_it_matters": "<1-2 sentences: why this is or isn't important for Rami right now>",
-  "recommended_action": "<one of: read_now, skim, save_for_later, share, ignore, monitor>",
-  "confidence": <0.0–1.0>
+  "summary": "<2-3 sentences capturing the core point>",
+  "topic_matches": ["<exact topic name from the list>"],
+  "language": "<en or he>",
+  "novelty_signal": "<breaking|incremental|repeat|background>",
+  "relevance_score": <0.0-1.0>,
+  "leverage_score": <0.0-1.0>,
+  "personal_fit_score": <0.0-1.0>,
+  "why_it_matters": "<1 sentence specific to Rami's context — never generic>",
+  "recommended_action": "<read_now|skim|save_for_later|share|ignore|monitor>",
+  "confidence": <0.0-1.0>
 }}
 
-Item details:
-- Title: {title}
-- Source: {source_name} (trust tier {trust_tier})
-- Topic matches: {topics_formatted}
-- Summary: {summary}"""
+Rules:
+- topic_matches: only exact names from the topic list, only if genuinely applicable.
+- why_it_matters: must reference JDD, consulting, career, or a current decision. Reject generic AI observations.
+- novelty_signal: breaking=new release/announcement, incremental=follow-up, repeat=seen before, background=evergreen."""
 
     return system, user
 

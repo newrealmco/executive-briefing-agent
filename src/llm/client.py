@@ -29,13 +29,31 @@ def _get_client() -> anthropic.Anthropic:
     wait=wait_exponential(multiplier=1, min=2, max=10),
     reraise=True,
 )
-def call(system: str, user: str, max_tokens: int = 1024) -> dict:
-    """Call Claude and parse the response as JSON."""
+def call(system: str, user: str, max_tokens: int = 1024, cache_system: bool = False) -> dict:
+    """Call Claude and parse the response as JSON.
+
+    cache_system=True enables prompt caching on the system prompt.
+    Use this when the same system prompt is sent for many items in a loop
+    (e.g. the enrich_and_score loop) — saves ~75% on system prompt input tokens.
+    Requires the system prompt to be ≥1024 tokens to be eligible for caching.
+    """
     client = _get_client()
+
+    if cache_system:
+        system_param = [
+            {
+                "type": "text",
+                "text": system,
+                "cache_control": {"type": "ephemeral"},
+            }
+        ]
+    else:
+        system_param = system
+
     response = client.messages.create(
         model=_MODEL,
         max_tokens=max_tokens,
-        system=system,
+        system=system_param,
         messages=[{"role": "user", "content": user}],
     )
     raw_text = response.content[0].text.strip()

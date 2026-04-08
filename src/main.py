@@ -32,6 +32,7 @@ from src.collectors import (
 )
 from src.storage.store import is_duplicate, mark_seen, prune
 from src.pipeline.normalizer import normalize
+from src.pipeline.pre_filter import pre_filter
 from src.pipeline.enricher import enrich
 from src.pipeline.scorer import score
 from src.pipeline.clusterer import cluster
@@ -72,15 +73,16 @@ def run_pipeline(items: list[dict], cfg: dict, mode: str) -> list[dict]:
     # 1. Normalize
     items = normalize(items)
 
-    # 2. Deduplicate
+    # 2. Keyword pre-filter (no LLM — eliminates irrelevant items before any API call)
+    candidates = pre_filter(items, cfg["topics"])
+
+    # 3. Deduplicate
     prune()
-    fresh = [i for i in items if not is_duplicate(i["id"])]
-    log.info("After dedup: %d/%d items fresh", len(fresh), len(items))
+    fresh = [i for i in candidates if not is_duplicate(i["id"])]
+    log.info("After dedup: %d/%d candidates fresh", len(fresh), len(candidates))
 
-    # 3. Enrich (LLM Call 1)
+    # 4. Enrich + Score (single combined LLM call per item, with prompt caching)
     enriched = enrich(fresh, cfg)
-
-    # 4. Score (LLM Call 2)
     scored = score(enriched, cfg)
 
     # 5. Filter by threshold
