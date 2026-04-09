@@ -19,6 +19,12 @@ data/raw/
 data/scored/
 data/briefings/
 data/briefing.log
+data/store.db
+
+# Personal config — never commit your own profile
+config/profile.md
+
+# config/examples/ is intentionally tracked — do NOT add it here
 
 # macOS
 .DS_Store

@@ -9,6 +9,8 @@ This is not a summarizer. It is a **judgment support system**. Every surfaced it
 3. What is the TL;DR?
 4. What should you do with it?
 
+> **Screenshot / example output** — see [`examples/example-daily.md`](examples/example-daily.md)
+
 ---
 
 ## How it works
@@ -63,6 +65,14 @@ personal-briefing-agent/
 ├── tests/
 └── requirements.txt
 ```
+
+---
+
+## Cost
+
+Approximately **$0.25 per daily run** at current Claude Sonnet pricing (~$7/month).  
+Resend free tier covers 3,000 emails/month. GitHub Actions free tier is sufficient for two scheduled workflows.  
+Total cost for personal use: roughly **$7–9/month** in API costs only.
 
 ---
 

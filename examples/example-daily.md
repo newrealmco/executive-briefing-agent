@@ -1,90 +1,84 @@
-# Briefing — 2025-11-14 | MCP adoption accelerating across enterprise toolchains
+# Briefing — 2025-11-14 | OpenTelemetry 1.9 + agent-assisted on-call patterns converging
 
-> This is an anonymized example briefing. Names, organizations, and personal details have been changed or removed.
+> Anonymized example output demonstrating the daily briefing format.
+> Replace `config/profile.md`, `config/topics.md`, and `config/sources.md` with your own
+> content to receive a briefing tailored to your role and priorities.
 
 ---
 
 ## Today's focus
 
-The dominant signal today is MCP adoption moving from experimental to production. Three independent sources — an Anthropic blog post, a LocalLLaMA thread, and a new modelcontextprotocol repo — converge on the same pattern: teams are standardizing agent tool interfaces using MCP rather than bespoke APIs. This directly validates the governance argument: when agents share a common connector protocol, policy enforcement becomes tractable. If you're positioning yourself at the intersection of agents and governance, this week's pattern is usable material.
+Two independent signals converge today: OpenTelemetry 1.9 shipped with stable semantic conventions for LLM traces, and a high-signal thread on r/sre documented how three platform teams are using lightweight coding agents to handle first-response on-call triage. Together these define the next horizon for the on-call automation project — there is now a standard telemetry substrate and practitioner evidence that agent-assisted triage is working in production. Neither is theoretical anymore.
 
 ---
 
-## Read now (8 items)
+## Read now (7 items)
 
 ---
 
-**Anthropic releases MCP server registry with 200+ connectors** — Anthropic Blog  
-Why it matters: This formalizes MCP as the integration standard the JDD consulting pitch assumes — a concrete data point that governance tooling for MCP-connected agents is a real market need, not a hypothesis.  
-TL;DR: Anthropic launched a curated registry of MCP servers spanning CRM, code, data, and observability tooling. Enterprise adoption is cited as the driver. Governance and access control across connectors is noted as an open problem.  
-Action: Save for consulting  
-Link: https://anthropic.com/blog/mcp-server-registry
+**OpenTelemetry 1.9: stable semantic conventions for LLM and agent traces** — GitHub / open-telemetry  
+Why it matters: This is the observability foundation the on-call automation project needs — once agent actions emit standardized traces, debugging agent decisions in production becomes tractable rather than guesswork.  
+TL;DR: OTel 1.9 promotes `gen_ai.*` semantic conventions to stable, covering LLM inputs/outputs, tool calls, and agent spans. SDK support lands in Python and Go this release. This closes the main observability gap for deployed agent systems.  
+Action: Read now  
+Link: https://github.com/open-telemetry/opentelemetry-specification/releases/tag/v1.9.0
 
 ---
 
-**Why agent reliability is the new SRE problem** — Latent Space  
-Why it matters: The post frames deployed agent failures using the same vocabulary as reliability engineering — this maps directly to the governance layer argument and is cite-worthy for the book.  
-TL;DR: The episode covers how teams at two mid-size AI companies are building on-call rotations and incident response for agent pipelines. Key insight: non-determinism makes traditional SRE playbooks insufficient; new runbooks are needed.  
-Action: Save for JDD  
-Link: https://latent.space/p/agent-reliability
+**Three platform teams using agents for on-call first response — what actually works** — Reddit / r/sre  
+Why it matters: Direct practitioner evidence that agent-assisted triage is in production, with specifics on failure modes — exactly what's needed before writing the architecture proposal.  
+TL;DR: A staff SRE documented how their team built a lightweight agent that reads runbooks, queries the metrics platform, and posts a structured triage report within 60 seconds of a page. Two other commenters shared similar setups. Main failure mode: agents confidently misclassify novel failure patterns as known ones. Thread has 1,200 upvotes.  
+Action: Save for later  
+Link: https://reddit.com/r/sre/comments/...
 
 ---
 
-**[Inbound email — Zoho] Re: JDD consulting inquiry** — Zoho / newrealm.co  
-Why it matters: A direct inbound lead from a VP of Engineering referencing the blog post on development judgment. This is a high-priority consulting signal.  
-TL;DR: A VP of Eng at a Series B fintech company replied to a cold LinkedIn message. They read the "engineering judgment" post and want to explore whether JDD applies to their AI-assisted code review workflow. Mentions a team of 40 engineers.  
+**[Inbound email] Re: platform engineering talk — CFP invitation** — Gmail  
+Why it matters: A conference organizer is asking for a talk proposal on internal developer platforms — a direct visibility opportunity worth evaluating against the current schedule.  
+TL;DR: A mid-size engineering conference (300–500 attendees) reached out after a recent blog post. They have a platform engineering track with a CFP deadline in 3 weeks. Speaking slot is 40 minutes.  
 Action: Reply  
 Link: (email — no URL)
 
 ---
 
-**Claude 3.7 adds extended thinking mode with auditable reasoning traces** — Anthropic Blog  
-Why it matters: Auditable reasoning is the missing governance primitive — this is the most direct product proof point for the "judgment layer" argument in the JDD manuscript.  
-TL;DR: Claude 3.7 now exposes an optional reasoning trace that can be logged, reviewed, and audited by downstream systems. Enterprise customers can configure how much reasoning is visible. This is distinct from chain-of-thought prompting — it's surfaced at the API level.  
-Action: Read now  
-Link: https://anthropic.com/blog/claude-3-7-extended-thinking
-
----
-
-**r/LocalLLaMA: "We replaced 6 bespoke tool APIs with MCP connectors — here's what broke"** — Reddit / LocalLLaMA  
-Why it matters: Real-world failure analysis of MCP migration — the exact kind of practitioner signal that makes for a credible consulting case study.  
-TL;DR: A team of 3 engineers documented their migration from custom tool APIs to MCP. Main failures: context window pressure from verbose schemas, permission model mismatch, and debugging difficulty when connectors fail silently. Post has 847 upvotes.  
-Action: Save for consulting  
-Link: https://reddit.com/r/LocalLLaMA/...
-
----
-
-**modelcontextprotocol/governance-patterns — new repo** — GitHub / modelcontextprotocol  
-Why it matters: An official MCP repo focused explicitly on governance patterns is the strongest possible market signal that this is a real product surface — not a blog post topic.  
-TL;DR: A new repository under the modelcontextprotocol org collecting governance patterns, access control templates, and audit log schemas for MCP server deployments. Currently 12 patterns, marked as alpha.  
+**Backstage 1.28 ships with first-class AI plugin support** — GitHub / backstage  
+Why it matters: If Backstage becomes the standard surface for AI tooling in internal platforms, this is a significant architectural direction signal for the developer portal conversation.  
+TL;DR: Backstage 1.28 adds a plugin API for AI-powered catalog enrichment, automated dependency scanning, and natural language search across the service catalog. Early adopters include two large enterprises cited in the release notes.  
 Action: Monitor  
-Link: https://github.com/modelcontextprotocol/governance-patterns
+Link: https://github.com/backstage/backstage/releases/tag/v1.28.0
 
 ---
 
-**The Pragmatic Engineer: Senior engineers are declining IC5+ offers at big tech** — The Pragmatic Engineer  
-Why it matters: Declining IC5 offer rates at Meta/Google signal either market softening or a preference shift toward smaller companies — relevant to the career positioning decision.  
-TL;DR: Survey data from 400 senior engineers shows 38% declined IC5+ offers in the past 12 months, citing loss of autonomy, layoff risk, and preference for early-stage roles with equity. Meta is specifically mentioned as losing candidates to AI startups.  
-Action: Monitor  
-Link: https://newsletter.pragmaticengineer.com/p/ic5-offers
+**Staff engineers build leverage without authority** — Irrational Exuberance  
+Why it matters: Directly relevant to the promotion cycle — concrete framing for the "impact without a title" narrative that a promotion packet needs.  
+TL;DR: The post argues that staff engineers build leverage through three mechanisms: writing that travels, decisions that document, and problems that outlast. Distinguishes this from heroics-based impact. Includes a template for a work log that surfaces influence to leadership.  
+Action: Save for later  
+Link: https://lethain.com/staff-engineer-leverage
 
 ---
 
-**Geektime: Israeli defense-tech startup raises $40M for AI-powered threat detection** — Geektime  
-Why it matters: Another data point in Israeli AI defense funding — relevant to the Israel tech scene tracking and signals continued investment in AI at the defense-tech intersection.  
-TL;DR: Startup [name] raised a $40M Series B for an AI system that automates threat pattern recognition across sensor networks. Investors include [VC firms]. Team of 60 in Be'er Sheva and Tel Aviv.  
+**Enterprise API tier launches — 5× rate limits, SLA included** — Anthropic Blog  
+Why it matters: If the on-call agent hits rate limits in production (a known risk at scale), the enterprise tier removes that blocker — relevant for the cost/architecture proposal.  
+TL;DR: A new enterprise API tier with 5× higher rate limits, 99.9% SLA, and dedicated capacity. Pricing is usage-based with a monthly minimum. Available now.  
 Action: Monitor  
-Link: https://geektime.com/...
+Link: https://anthropic.com/blog/enterprise-api
+
+---
+
+**Senior engineer compensation benchmarks, Q4 2025** — The Pragmatic Engineer  
+Why it matters: Current market data for senior and staff-level roles — directly useful for evaluating compensation if the promotion goes through.  
+TL;DR: Survey of 800 engineers shows median total comp for senior engineers at $220k in NYC/SF, $175k remote. Staff engineers at $280k median. Significant variance by company stage: public vs. late-stage private vs. early-stage.  
+Action: Save for later  
+Link: https://newsletter.pragmaticengineer.com/p/compensation-benchmarks-q4-2025
 
 ---
 
 ## Needs action
 
-- **Reply to VP of Eng inbound (Zoho)** — Consulting lead, reply within 24 hours. Propose a 30-minute discovery call. Reference the code review context they mentioned.
-- **modelcontextprotocol/governance-patterns** — Star and watch the repo. Consider opening an issue or contributing a pattern based on JDD chapter 9 material.
+- **Reply to CFP invitation (Gmail)** — 3-week deadline. Propose a 40-minute talk on internal developer platforms. Reply within 48 hours to hold the slot.
+- **OpenTelemetry 1.9** — Share the `gen_ai.*` conventions with the on-call automation working group. Resolves the open question about telemetry format from last sprint.
 
 ---
 
 ## One recommended move
 
-Draft a short reply to the VP of Eng inbound today. Keep it to 3 sentences: acknowledge the specific post they referenced, confirm you work with teams on exactly that problem, and propose a 30-minute call next week with a Calendly link. Do not pitch before the call.
+Draft the conference talk abstract today — 150 words, framed as a case study rather than a tutorial: what the platform decision was, what it cost, what you learned. This takes 30 minutes and is the hardest part of the CFP to delay.
