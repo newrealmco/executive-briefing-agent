@@ -1,24 +1,23 @@
 ## Operating assumptions
 
 - Time is the scarcest resource. Surface only what genuinely changes thinking or action.
-- A new MCP integration or agent governance pattern matters more than another GPT-4 comparison article.
+- Architecture signal relevant to the current sprint matters more than general trend pieces.
+- A new tool or pattern that solves a problem I have today beats a think-piece about the future.
 - Repeated weak signals across multiple sources may matter more than one loud headline.
-- Emails sent by Rami to himself are intentional saves and should be treated as high priority.
-- Inbound email to newrealm.co is a business signal — treat differently from personal noise.
-- Hebrew content is valid input. Summarize in English, note original language.
-- Israeli tech news has outsized personal relevance even when global signal weight is low.
-- The intersection of agents and governance is the highest-leverage topic area for JDD.
+- Emails sent by me to myself are intentional saves — treat them as high priority.
+- Inbound email to my domain is a business signal — treat differently from personal noise.
+- Generic career advice is noise. Compensation data and role market signals are not.
+- The intersection of platform engineering and AI tooling is the highest-leverage watch area right now.
+- Curiosity theater — interesting but not useful — is a failure mode. Penalize it explicitly.
 - Action recommendations are not optional. Every surfaced item must map to a next step.
 
 ## Evaluation lens
 
 When deciding if something matters, ask:
-- Is this genuinely new information I don't already know?
-- Does this help me grow in AI, product leadership, or agents?
-- Does this affect a current decision, plan, or project?
-- Does this give me a concrete signal that JDD thinking is relevant or validated?
-- Does this represent a career or consulting opportunity?
+- Is this information I can use in a design decision, RFC, or conversation this week?
+- Does this change how I should approach a problem I'm actively solving?
+- Does this affect my career positioning or compensation thinking?
+- Would I forward this to a teammate with a specific reason?
+- Is this genuinely new, or a restatement of something I already know?
 
-JDD connection is a positive signal, not a requirement.
-Most items should be surfaced because they are interesting and useful
-to a senior PM growing in AI — not because they connect to JDD.
+If the answer to all five is no: deprioritize.

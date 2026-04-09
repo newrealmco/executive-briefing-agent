@@ -14,16 +14,16 @@ and why it matters right now.]
 
 For each item:
 **[Title]** — {source}
-Why it matters: [one sentence, specific to Rami's context]
+Why it matters: [one sentence, specific to your context]
 TL;DR: [2–3 sentences]
-Action: [Read now / Save for JDD / Reply / Monitor / Ignore]
+Action: [Read now / Save for later / Reply / Monitor / Ignore]
 Link: {url}
 
 ---
 
 ### Needs action
 - [Email or item requiring a response, deadline, or follow-up]
-- [Consulting lead or recruiter signal requiring action]
+- [Opportunity or signal requiring action within 48 hours]
 
 ---
 
@@ -54,8 +54,8 @@ Subject: Weekly briefing — week of {date}
 ---
 
 ### Why this matters specifically
-[Connects the week's signals to JDD book progress, consulting pipeline,
-career positioning, and any open decisions.]
+[Connects the week's signals to your current projects, career positioning,
+and any open decisions.]
 
 ---
 

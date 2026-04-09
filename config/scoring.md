@@ -14,17 +14,17 @@ All dimensions are 0.0 to 1.0.
 ## Dimension definitions
 
 relevance: alignment with declared topics and their weights
-leverage: potential impact on JDD book, consulting pipeline, career positioning, or current decisions
+leverage: potential impact on current projects, career positioning, or active decisions
 urgency: time sensitivity — releases, deadlines, limited-window opportunities score higher
 novelty: not already surfaced this week; not a repeat of yesterday's items
 source_trust: known high-quality sources score higher (see trust tiers below)
-personal_fit: direct connection to active projects — JDD book, newrealm.co, Meta process, consulting
+personal_fit: direct connection to active projects — multi-tenant layer, on-call automation, promotion cycle
 
 ## Source trust tiers
 
-tier_1 (1.0): Simon Willison, Anthropic blog, Lenny's Newsletter, The Pragmatic Engineer, Latent Space
-tier_2 (0.8): OpenAI blog, Hugging Face blog, Stratechery, One Useful Thing, Import AI
-tier_3 (0.6): Reddit (score > 200), Geektime, Calcalist, Ben's Bites
+tier_1 (1.0): Will Larson, Charity Majors, Martin Fowler, The Pragmatic Engineer, Increment
+tier_2 (0.8): Simon Willison, Latent Space, Stratechery, Anthropic Blog, Hugging Face Blog
+tier_3 (0.6): Reddit (score > 200), The Diff, curated newsletters
 tier_4 (0.4): Reddit (score 50–200), Medium, general RSS
 tier_5 (0.2): Unknown sources, low-engagement posts
 
@@ -43,9 +43,8 @@ weekly_briefing: 0.45
 
 ## Special boost rules
 
-jdd_direct_connection: +0.10
-agent_governance_intersection: +0.15
-consulting_lead_signal: +0.25
-mcp_new_development: +0.15
-israel_tech_local_relevance: +0.10
-genuinely_novel_capability: +0.15
+active_project_connection: +0.20
+career_signal: +0.15
+novel_tool_or_pattern: +0.15
+open_source_release: +0.10
+industry_compensation_data: +0.10

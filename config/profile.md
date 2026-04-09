@@ -1,35 +1,35 @@
 ---
-name: Rami
-role: Senior Product Manager, AI/ML
-timezone: Asia/Jerusalem
-briefing_time: "06:30"
+name: Alex
+role: Senior Software Engineer, Platform
+timezone: America/New_York
+briefing_time: "07:00"
 language_primary: English
-language_secondary: Hebrew
+language_secondary: ""
 briefing_style: direct, concise, decision-oriented
 summary_depth: medium
 ---
 
 ## Current priorities
 
-- Publish the JDD (Judgment Driven Development) book — 18-chapter structure, target November 2026
-- Land first paying JDD consulting client via LinkedIn outreach to VPs of Engineering and CTOs
-- Build executive presence in AI governance and product leadership
-- Stay informed on AI/ML frontier developments, agents, and MCP ecosystem
-- Monitor career market signals including Meta IC5 team matching process
+- Ship the new multi-tenant data isolation layer before Q3 freeze
+- Evaluate and adopt an internal agent framework for the on-call automation project
+- Build visibility with engineering leadership ahead of staff engineer promotion cycle
+- Stay informed on platform engineering trends, AI tooling for developers, and SRE practices
+- Monitor the job market for staff-level roles at infra-focused companies
 
 ## Constraints
 
-- Limited uninterrupted time due to high family and work load
-- Office days Sunday, Tuesday, Thursday — briefing must be scannable in under 10 minutes
-- Needs prioritization more than discovery
+- Two young kids — mornings are limited, briefing must be readable in under 10 minutes
+- Deep work blocks are 9am–12pm; no interruptions during that window
+- Needs signal filtering more than discovery — already subscribed to too many newsletters
 
 ## Evaluation lens
 
 When deciding if something matters, ask:
-- Does this strengthen or challenge the JDD thesis?
-- Does this give a concrete example for a blog post or book chapter?
-- Does this affect market position as a PM in AI governance?
-- Does this signal a career or consulting opportunity?
-- Is this something that would change a current decision or plan?
+- Does this affect the architecture decision we're actively debating?
+- Does this give me a concrete example or argument I can use in a design doc or RFC?
+- Does this change how I should approach the on-call automation project?
+- Does this signal a career or compensation opportunity worth tracking?
+- Is this something I would forward to a teammate with a specific note?
 
 If none of the above: deprioritize.
