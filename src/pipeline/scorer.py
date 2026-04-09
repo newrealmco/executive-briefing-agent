@@ -90,3 +90,86 @@ def score(items: list[dict], cfg: dict) -> list[dict]:
     items.sort(key=lambda x: x.get("final_score", 0.0), reverse=True)
     log.info("Scorer complete: %d items scored", len(items))
     return items
+
+
+def apply_diversity_caps(
+    items: list[dict],
+    source_cap: float = 0.40,
+    topic_cap: float = 0.35,
+) -> list[dict]:
+    """
+    Enforce source and topic diversity on an already-scored, sorted list.
+
+    source_cap: no single source may exceed this fraction of final items.
+    topic_cap:  no single topic (primary = first topic_match) may exceed
+                this fraction of final items.
+
+    Items must be sorted by final_score descending before calling this.
+    Lowest-scored items are dropped first (they appear last in the list).
+    """
+    if not items:
+        return items
+
+    total = len(items)
+
+    # ── 1. Source cap ────────────────────────────────────────────────────────
+    max_per_source = max(1, int(total * source_cap))
+    source_counts: dict[str, int] = {}
+    after_source: list[dict] = []
+    dropped_source = 0
+
+    for item in items:
+        src = (item.get("source") or "unknown").lower()
+        if source_counts.get(src, 0) < max_per_source:
+            after_source.append(item)
+            source_counts[src] = source_counts.get(src, 0) + 1
+        else:
+            dropped_source += 1
+            log.debug("Source cap dropped [%s]: %s", src, item.get("title", "")[:60])
+
+    if dropped_source:
+        log.info(
+            "Source cap (%.0f%%): dropped %d items; per-source counts: %s",
+            source_cap * 100,
+            dropped_source,
+            source_counts,
+        )
+
+    # ── 2. Topic cap ─────────────────────────────────────────────────────────
+    # Attribute each item to its primary topic (first element of topic_matches).
+    # Items with no topic_matches are always kept.
+    post_source_total = len(after_source)
+    max_per_topic = max(1, int(post_source_total * topic_cap))
+    topic_counts: dict[str, int] = {}
+    final: list[dict] = []
+    dropped_topic = 0
+
+    for item in after_source:
+        topics = item.get("topic_matches") or []
+        primary = topics[0] if topics else None
+        if primary is None or topic_counts.get(primary, 0) < max_per_topic:
+            final.append(item)
+            if primary:
+                topic_counts[primary] = topic_counts.get(primary, 0) + 1
+        else:
+            dropped_topic += 1
+            log.debug(
+                "Topic cap dropped [%s]: %s", primary, item.get("title", "")[:60]
+            )
+
+    if dropped_topic:
+        log.info(
+            "Topic cap (%.0f%%): dropped %d items; per-topic counts: %s",
+            topic_cap * 100,
+            dropped_topic,
+            topic_counts,
+        )
+
+    log.info(
+        "Diversity caps applied: %d → %d items (−%d source, −%d topic)",
+        total,
+        len(final),
+        dropped_source,
+        dropped_topic,
+    )
+    return final

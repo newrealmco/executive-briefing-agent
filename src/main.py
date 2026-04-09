@@ -34,7 +34,7 @@ from src.storage.store import is_duplicate, mark_seen, prune
 from src.pipeline.normalizer import normalize
 from src.pipeline.pre_filter import pre_filter
 from src.pipeline.enricher import enrich
-from src.pipeline.scorer import score
+from src.pipeline.scorer import score, apply_diversity_caps
 from src.pipeline.clusterer import cluster
 from src.pipeline.renderer import render
 from src.delivery.email_sender import send
@@ -90,7 +90,10 @@ def run_pipeline(items: list[dict], cfg: dict, mode: str) -> list[dict]:
     above = [i for i in scored if i["final_score"] >= threshold]
     log.info("Above threshold (%.2f): %d items", threshold, len(above))
 
-    # 6. Mark all scored items as seen
+    # 6. Apply source and topic diversity caps
+    above = apply_diversity_caps(above, source_cap=0.40, topic_cap=0.35)
+
+    # 7. Mark all scored items as seen
     for item in scored:
         mark_seen(item)
 
