@@ -92,7 +92,7 @@ Total cost for personal use: roughly **$7–9/month** in API costs only.
 ### 1. Fork and clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/personal-briefing-agent.git
+git clone https://github.com/newrealmco/executive-briefing-agent.git
 cd personal-briefing-agent
 pip install -r requirements.txt
 ```
